@@ -11,7 +11,7 @@ class SyncAstronomyArticles extends Command
     protected $signature = 'wiki:sync-astronomy';
     protected $description = 'Sinkronisasi artikel astronomi dari Wikipedia';
 
-    protected string $category = 'Kategori:Astronomi';
+    protected string $category = 'Category:Astronomy';
 
     public function handle(WikipediaService $wiki)
     {

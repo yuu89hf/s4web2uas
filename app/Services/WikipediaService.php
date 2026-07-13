@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Http;
 
 class WikipediaService
 {
-    protected string $baseUrl = 'https://id.wikipedia.org/w/api.php';
+    protected string $baseUrl = 'https://en.wikipedia.org/w/api.php';
 
     public function getCategoryMembers(string $category, int $limit = 50, ?string $continue = null): array
     {
