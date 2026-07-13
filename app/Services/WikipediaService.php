@@ -6,10 +6,16 @@ use Illuminate\Support\Facades\Http;
 
 class WikipediaService
 {
+    // URL ini sudah benar, tidak perlu diubah!
     protected string $baseUrl = 'https://en.wikipedia.org/w/api.php';
 
     public function getCategoryMembers(string $category, int $limit = 50, ?string $continue = null): array
     {
+        // FIX 1: Memastikan nama kategori otomatis dibungkus "Category:" jika kamu lupa
+        if (!str_starts_with($category, 'Category:')) {
+            $category = 'Category:' . $category;
+        }
+
         $params = [
             'action' => 'query',
             'list' => 'categorymembers',
@@ -23,7 +29,10 @@ class WikipediaService
             $params['cmcontinue'] = $continue;
         }
 
-        $response = Http::get($this->baseUrl, $params);
+        // FIX 2: Wajib menambahkan denganHeaders() berisi User-Agent agar tidak diblokir Wikipedia
+        $response = Http::withHeaders([
+            'User-Agent' => 'LaravelAstronomyBot/1.0 (contact@example.com)'
+        ])->get($this->baseUrl, $params);
 
         return [
             'items' => $response->json('query.categorymembers', []),
@@ -33,7 +42,10 @@ class WikipediaService
 
     public function getArticleSummary(string $title): ?array
     {
-        $response = Http::get($this->baseUrl, [
+        // FIX 3: Tambahkan User-Agent juga di fungsi ini!
+        $response = Http::withHeaders([
+            'User-Agent' => 'LaravelAstronomyBot/1.0 (contact@example.com)'
+        ])->get($this->baseUrl, [
             'action' => 'query',
             'titles' => $title,
             'prop' => 'extracts|pageimages|info',

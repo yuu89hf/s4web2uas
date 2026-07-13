@@ -1,8 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            🔭 Astronomy Feed
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                🔭 Astronomy Feed
+            </h2>
+            
+            <button 
+                @click="refreshFeed()"
+                class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow text-sm transition duration-200">
+                🔄 Acak Artikel Baru
+            </button>
+        </div>
     </x-slot>
 
     <div class="py-8" x-data="{
@@ -18,6 +26,18 @@
             const newArticles = await res.json();
             this.articles.push(...newArticles);
             this.loading = false;
+        },
+        // FUNGSI BARU: Mengosongkan feed lalu mengambil 10 data acak baru dari server
+        async refreshFeed() {
+            if (this.loading) return;
+            this.loading = true;
+            this.articles = []; // Kosongkan dulu
+            
+            // Tembak endpoint load-more tanpa parameter exclude agar dapat set acak baru
+            const res = await fetch('{{ route('feed.load-more') }}');
+            const freshArticles = await res.json();
+            this.articles = freshArticles;
+            this.loading = false;
         }
     }" x-init="window.addEventListener('scroll', () => {
         if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300) {
@@ -25,7 +45,7 @@
         }
     })">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <template x-if="articles.length === 0">
+            <template x-if="articles.length === 0 && !loading">
                 <div class="bg-white p-6 rounded-lg shadow text-center text-gray-500">
                     Belum ada artikel. Jalankan <code>php artisan wiki:sync-astronomy</code> dulu ya.
                 </div>
