@@ -22,11 +22,9 @@ class FeedController extends Controller
      */
     public function loadMore(Request $request)
     {
-        // Pastikan $excludeIds selalu berupa array
         $excludeIds = $request->input('exclude', []);
 
-        // Kita gunakan when() agar query whereNotIn hanya berjalan jika ada ID yang diexclude.
-        // Ini mencegah bug dan membuat query lebih bersih saat tombol refresh ditekan!
+        // Mengambil 10 artikel acak murni yang TIDAK SAMA dengan 10 artikel sebelumnya
         $articles = WikiArticle::inRandomOrder()
             ->when(!empty($excludeIds), function ($query) use ($excludeIds) {
                 return $query->whereNotIn('id', $excludeIds);
