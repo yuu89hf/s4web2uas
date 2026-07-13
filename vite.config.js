@@ -8,4 +8,8 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    resolve: {
+        // Mengikuti jalur Scoop asli di Windows untuk kelancaran resolusi node_modules
+        preserveSymlinks: true,
+    },
 });
